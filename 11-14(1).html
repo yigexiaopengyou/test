@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+	ul{
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+		.link{
+			width: 80px;
+			display: block;
+			position: relative;
+			margin:10px auto;
+		}
+		/*590*470*/
+		.box{
+			width: 590px;
+			height: 470px;
+			position: relative;
+			overflow:hidden;
+			border: 10px solid lightblue;
+			margin: 20px auto;
+		}
+		.imgs{
+			position: absolute;
+			top: 0;
+			left:0;
+	    display: flex;
+	    transition: 1s;
+		}
+		.imgs img{
+			width: 590px;
+			height: 470px;
+			display: block;
+			/*vertical-align: middle;*/
+		}
+    .arrows span{
+    	position: absolute;
+    	top: 215px;
+    	font-size: 36px;
+    	vertical-align: middle;
+    	color:#fff;
+    	background:#000 ;
+    	text-align: center;
+    	width: 30px;
+    	height: 40px;
+    	line-height: 40px;
+    	cursor: pointer;
+    	opacity: 0;
+    }
+    .box:hover .arrows span{
+    	opacity: .5;
+    }
+    .box:hover .span:hover{
+    	opacity: 1;
+    }
+    .arrows .left {
+    	left: 0;
+    }
+    .arrows .right{
+    	right: 0;
+    }
+    .dots{
+    	position: absolute;
+    	bottom: 20px;
+    	width: 100%;
+    	display: flex;
+    	justify-content: center;
+    }
+    .dots li{
+    	width: 30px;
+    	height: 30px;
+    	font-size: 24px;
+    	line-height: 30px;
+    	text-align: center;
+    	background:orange;
+    	border-radius: 50%;
+    	border: 3px solid #fff;
+    	margin: 0 2px;
+    	cursor: pointer;
+    }
+    .dots .act{
+    	background: red;
+    	color:#fff;
+    }
+	</style>
+</head>
+<body>
+	<div class="link"><a href="隐藏方式.html">隐藏方式</a></div>
+	<div id="carouse101" class="box">
+		<ul class="imgs">
+			<li><a href="#"><img src="images/1.jpg" alt="1"></a></li>
+			<li><a href="#"><img src="images/2.jpg" alt="2"></a></li>
+			<li><a href="#"><img src="images/3.jpg" alt="3"></a></li>
+			<li><a href="#"><img src="images/4.jpg" alt="4"></a></li>
+			<li><a href="#"><img src="images/5.jpg" alt="5"></a></li>
+		</ul>
+		<div class="arrows">
+			<span class="left">&lt;</span>
+			<span class="right">&gt;</span>
+		</div>
+		<ul class="dots">
+			<li class="act">1</li>
+			<li>2</li>
+			<li>3</li>
+			<li>4</li>
+			<li>5</li>
+		</ul>
+	</div>
+	<script >
+		//轮播图的主要工作就是调整图片的定位(或是显隐)。编写思路，指定index的值，根据index值显示对应的图片并设置按钮特殊样式
+	//当前轮播图的展示区域
+		var box=document.getElementById('carouse101');
+		//图片列表
+		var imgs =box.getElementsByClassName('imgs')[0];
+		//左箭头
+		var arrowL=box.getElementsByClassName('left')[0];
+		//右箭头
+		var arrowR=box.getElementsByClassName('right')[0];
+		//按钮容器
+		var dots=box.getElementsByClassName('dots')[0];
+    //按钮列表
+		var btns=dots.getElementsByTagName('li');
+		var imgWidth=590;//一幅图宽度
+		var n=btns.length;//图片数量/按钮数量
+		var index=0;//当前显示的图片序号，0号开始范围是[0,n-1]
+		var t=null;
+		var s=2;
+		//显示指定index对象的图片
+		function showImg  (index) {
+			imgs.style.left=-1*index*imgWidth+'px';
+		}
+		//指定index的按钮显示特殊样式
+	function showBtn (index) {
+		for(var i=0;i<btns.length;i++){
+			btns[i].removeAttribute('class');
+		}
+		  btns[index].className='act';
+	}
+	//设置右箭头点击事件，...
+		arrowR.onclick=function () {
+			index=(index<n-1)?index+1:0;//序号的边界判断
+			showImg(index);
+			showBtn(index);
+		}
+		//设置左箭头点击事件，....
+		arrowL.onclick=function () {
+			index=index>0?index-1:n-1;//序号的边界判断
+			showImg(index);
+			showBtn(index);
+		}
+		//设置多有按钮点击事件，...
+		for(var i=0;i<btns.length;i++){
+			btns[i].index=i;
+			btns[i].onclick=function (){
+				index=this.index;
+			  showImg(index);
+			  showBtn(index);
+			}
+		}
+		//鼠标进入轮播图区域时，停止自动轮播
+		box.onmouseover=function () {
+			clearInterval(t);
+		}
+		//鼠标离开轮播图区域时，重新自动轮播
+		box.onmouseout=function () {
+			t=setInterval(arrowR.onclick,s*1000);
+		}
+		box.onmouseout();//执行一次mouseout操作，开启定时器
+	</script>
+</body>
+</html>

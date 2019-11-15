@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		ul{
+			list-style: none;
+			margin: 0;
+			padding:0;
+		}
+		.link{
+			width: 80px;
+			display: block;
+			/* border:2px solid red; */
+			position: relative;
+			margin:10px auto;
+		}
+		/* 520*280 */
+		.box{
+			width: 520px;
+			height: 280px;
+			position: relative;
+			overflow: hidden;
+			border:10px solid lightblue;
+			margin: 20px auto;
+		}
+		.imgs{
+			left: 0;
+			top: 0;
+     /* display: flex; */      /* 撑开元素 */
+			position: absolute;
+			/* transition: 1s; */
+		}
+		.imgs li{
+			position: absolute;
+			top: 0;
+			left: 0;
+			opacity: 0;
+			z-index: -1;
+			transition: 1s linear;
+		}
+		.imgs .show{
+			opacity: 1;
+			z-index: 0;
+		}
+		.imgs img{
+			display: block;
+			/* vertical-align: middle; */
+		}
+
+		.arrows span{
+			top:120px;/* (280-40)/2 */
+			color: #fff;
+			width: 30px;
+			height: 40px;
+			font-size: 35px;
+			font-family: Verdana;
+			line-height: 35px;
+			position: absolute;
+			text-align: center;
+			background-color: #000;
+			cursor:pointer;
+			opacity: 0; /* 透明度 */
+		}
+		.box:hover .arrows span{
+			opacity: .5;
+		}
+		.box .arrows span:hover{
+			opacity: 1;
+		}
+		.arrows .left{
+			left: 0;
+		}
+		.arrows .right{
+			right: 0;
+		}
+		.dots{
+			position: absolute;
+			bottom: 20px;
+			width: 100%;
+			display: flex;
+			justify-content: center;
+		}
+		.dots li{
+			width: 30px;
+			height: 30px;
+			font-size: 24px;
+			line-height: 30px;
+			text-align: center;
+			background: green;
+			border-radius: 50%;
+			border:3px solid lightblue;
+			margin: 0 2px;
+			cursor:pointer;
+			transition: 1s linear;
+		}
+		.dots .act{
+			background: seagreen;
+			color:#fff;
+		}
+	</style>
+</head>
+<body>
+	<div class="link"><a href="11-14(1).html">平移方式</a></div>
+	<div id="carouse101" class="box"> <!-- 轮播图 -->
+		<!-- ul.imgs>li*5>a[href=#]>img[src=images/$.jpg][alt=$] -->
+		<ul class="imgs" >
+			<li class="show"><a href="#"><img src="images/1.jpg" alt="1"></a></li>
+			<li><a href="#"><img src="images/2.jpg" alt="2"></a></li>
+			<li><a href="#"><img src="images/3.jpg" alt="3"></a></li>
+			<li><a href="#"><img src="images/4.jpg" alt="4"></a></li>
+			<li><a href="#"><img src="images/5.jpg" alt="5"></a></li>
+		</ul>
+		<!-- div.arrows>span.left{&it;}+span.right{&gt;} -->
+		<div class="arrows"> <!-- 箭头 -->
+			<span class="left">&lt;</span>
+			<span class="right">&gt;</span>
+		</div>
+		<!-- ul.dots>li{$}*5 -->
+		<ul class="dots"> <!-- 小圆点 -->
+			<li class="act">1</li>
+			<li>2</li>
+			<li>3</li>
+			<li>4</li>
+			<li>5</li>
+		</ul>
+	</div>
+	<script>
+         //轮播图的主要工作就是调整图片列表的定位或者是显隐
+         //编写思路：指定index值，根据index值显示对应的图片并设置按钮特殊样式
+		var box=document.getElementById('carouse101'); 		//获取轮播图显示区域
+		var imgsBox=box.getElementsByClassName('imgs')[0];		//图片列表区域
+		var imgs=imgsBox.getElementsByTagName('li');  //图片列表
+		var arrowL=box.getElementsByClassName('left')[0];		//左箭头
+		var arrowR=box.getElementsByClassName('right')[0];		//右箭头
+		var dots=box.getElementsByClassName('dots')[0];		//按钮容器
+		var btns=dots.getElementsByTagName('li');		//按钮列表
+		var index=0;    //当前显示的图片序号，0号开始，范围是[0,n-1]
+		var n=btns.length; //图片数量和按钮数量
+		var t=null;
+		var s=2;
+		//显示指定index对应的图片
+		function showImg(index){
+			// imgs.style.left=-1*index*imgWidth+'px';
+			for(var i=0;i<n;i++){
+				imgs[i].removeAttribute('class');
+			}
+			imgs[index].className='show';
+		}
+		//指定index的按钮显示特殊样式
+		function showBtn (index){
+			for(var i=0;i<btns.length;i++){
+				btns[i].removeAttribute('class');
+			}
+			btns[index].className='act';
+		}
+		//设置右箭头事件
+		arrowR.onclick=function(){
+			index=index<n-1?index+1:0;    //序号的边界判断
+			showImg(index);
+			showBtn (index);
+		}
+		//设置左箭头事件
+		arrowL.onclick=function(){
+			index=index>0?index-1:n-1    //序号的边界判断
+			showImg(index);
+			showBtn (index);
+		}
+		//设置所有按钮的点击事件
+		for(var i=0;i<btns.length;i++){
+			btns[i].idx=i;
+			btns[i].onclick=function(){
+				index=this.idx;
+				showImg(index);
+				showBtn(index); //
+			}
+		}
+		//鼠标进入轮播图区域时，停止自动轮播
+		box.onmouseover=function(){
+			clearInterval(t);
+		}
+		//鼠标离开轮播图区域是，继续自动轮播
+		box.onmouseout=function(){
+			t=setInterval(arrowR.onclick,s*1000);
+		}
+		box.onmouseout();  //执行一次mouseout操作，开启定时器
+	</script>
+</body>
+</html>
